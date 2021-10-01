@@ -1,0 +1,93 @@
+## @file
+# Build all KaRaT Docker registy images.
+#
+# Copyright (C) 2020 - 2021 Marvin Häuser. All rights reserved.
+# Copyright (C) 2020 - 2021 Kaiserslautern Racing Team. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+##
+
+# Some images can be built in parallel, pipeline them in stages.
+stages:
+  - build_stage1
+  - build_stage2
+  - build_stage3
+  - build_stage4
+  - build_stage5
+  - build_stage6
+
+#
+# Build all registry images via DinD, which binds to the host Docker socket.
+#
+image: docker:latest
+services:
+  - docker:dind
+
+build:karat_ubuntu-bionic:
+  stage: build_stage1
+  script:
+    - KARAT_UBUNTU_TAG=bionic ./registry/karat_ubuntu/build.sh
+
+build:karat_ubuntu-focal:
+  stage: build_stage1
+  script:
+    - KARAT_UBUNTU_TAG=focal ./registry/karat_ubuntu/build.sh
+
+build:karat_ros-melodic:
+  stage: build_stage2
+  script:
+    - KARAT_ROS_TAG=melodic ./registry/karat_ros/build.sh
+
+build:karat_user_ros_common-melodic:
+  stage: build_stage3
+  script:
+    - KARAT_ROS_TAG=melodic ./registry/karat_user_common/ros/build.sh
+
+build:karat_ciserver_ros-melodic:
+  stage: build_stage3
+  script:
+    - KARAT_ROS_TAG=melodic ./registry/karat_ciserver/ros/build.sh
+
+build:karat_ros-noetic:
+  stage: build_stage2
+  script:
+    - KARAT_ROS_TAG=noetic ./registry/karat_ros/build.sh
+
+build:karat_user_ros_common-noetic:
+  stage: build_stage3
+  script:
+    - KARAT_ROS_TAG=noetic ./registry/karat_user_common/ros/build.sh
+
+build:karat_ciserver_ros-noetic:
+  stage: build_stage3
+  script:
+    - KARAT_ROS_TAG=noetic ./registry/karat_ciserver/ros/build.sh
+
+build:karat_ue4_prereq:
+  stage: build_stage2
+  script:
+    - ./registry/karat_ue4_prereq/build.sh
+
+build:karat_ue4_source:
+  stage: build_stage3
+  script:
+    - ./registry/karat_ue4_source/build.sh
+
+build:karat_ue4_build:
+  stage: build_stage4
+  script:
+    - ./registry/karat_ue4_build/build.sh
+
+build:karat_ue4:
+  stage: build_stage5
+  script:
+    - ./registry/karat_ue4/build.sh
+
+build:karat_user_ue4_common:
+  stage: build_stage6
+  script:
+    - ./registry/karat_user_common/ue4/build.sh
+
+build:karat_tensorrt-noetic:
+  stage: build_stage1
+  script:
+    - KARAT_ROS_TAG=noetic ./registry/karat_tensorrt/build.sh
